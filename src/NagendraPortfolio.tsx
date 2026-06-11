@@ -122,26 +122,6 @@ const S: Record<string, React.CSSProperties> = {
     cursor: "pointer",
     transition: "opacity 0.2s",
   },
-  hamburger: {
-    flexDirection: "column" as const,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 5,
-    width: 36,
-    height: 36,
-    background: "none",
-    border: `1px solid ${C.border}`,
-    borderRadius: 8,
-    cursor: "pointer",
-    padding: 6,
-  },
-  hamburgerLine: {
-    width: 20,
-    height: 2,
-    background: C.muted,
-    borderRadius: 2,
-    transition: "all 0.3s",
-  },
   // HERO
   hero: {
     minHeight: "100vh",
@@ -353,7 +333,7 @@ const S: Record<string, React.CSSProperties> = {
   },
 }
 
-// ── Keyframes & responsive CSS injected once ─────────────────────────────
+// ── Keyframes injected once ────────────────────────────────────────────────
 
 function InjectStyles() {
   useEffect(() => {
@@ -373,54 +353,6 @@ function InjectStyles() {
       ::-webkit-scrollbar { width: 4px; }
       ::-webkit-scrollbar-track { background: #0A0F1E; }
       ::-webkit-scrollbar-thumb { background: #3B82F6; border-radius: 2px; }
-
-      /* ── Mobile nav overlay ── */
-      .nv-overlay {\
-        position: fixed;\
-        top: 64px;\
-        left: 0;\
-        right: 0;\
-        bottom: 0;\
-        background: rgba(10,15,30,0.97);\
-        backdrop-filter: blur(24px);\
-        -webkit-backdrop-filter: blur(24px);\
-        z-index: 99;\
-        display: flex;\
-        flex-direction: column;\
-        align-items: center;\
-        justify-content: flex-start;\
-        padding: 32px 5%;\
-        gap: 8px;\
-        animation: fadeUp 0.3s ease;\
-      }\
-      .nv-overlay button {\
-        display: block;\
-        width: 100%;\
-        padding: 16px 20px;\
-        font-size: 1rem;\
-        font-weight: 500;\
-        color: #8B9CC8;\
-        cursor: pointer;\
-        transition: color 0.2s, background 0.2s;\
-        white-space: nowrap;\
-        background: none;\
-        border: 1px solid rgba(59,130,246,0.15);\
-        border-radius: 12px;\
-        text-align: center;\
-        font-family: 'Inter', sans-serif;\
-      }\
-      .nv-overlay button:hover,\
-      .nv-overlay button:active {\
-        color: #06B6D4;\
-        background: rgba(59,130,246,0.08);\
-      }\
-      .nv-overlay .nv-overlay-cta {\
-        background: linear-gradient(135deg,#3B82F6,#06B6D4);\
-        border: none;\
-        color: #fff;\
-        font-weight: 700;\
-        margin-top: 12px;\
-      }
     `
     document.head.appendChild(style)
   }, [])
@@ -455,20 +387,6 @@ function useReveal() {
       transition: "opacity 0.6s ease, transform 0.6s ease",
     },
   }
-}
-
-// ── useMediaQuery hook ─────────────────────────────────────────────────────
-
-function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false)
-  useEffect(() => {
-    const mql = window.matchMedia(query)
-    setMatches(mql.matches)
-    const handler = (e: MediaQueryListEvent) => setMatches(e.matches)
-    mql.addEventListener("change", handler)
-    return () => mql.removeEventListener("change", handler)
-  }, [query])
-  return matches
 }
 
 // ── Sub-components ─────────────────────────────────────────────────────────
@@ -977,13 +895,8 @@ function ContactForm() {
 // ── MAIN COMPONENT ─────────────────────────────────────────────────────────
 
 export default function NagendraPortfolio() {
-  const isMobile = useMediaQuery("(max-width: 767px)")
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-
-  const scrollTo = (id: string) => {
-    setMobileMenuOpen(false)
+  const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })
-  }
 
   const r1 = useReveal(),
     r2 = useReveal(),
@@ -1003,110 +916,60 @@ export default function NagendraPortfolio() {
         <div style={S.navLogo} onClick={() => scrollTo("hero")}>
           NV
         </div>
-
-        {/* Desktop nav links */}
-        {!isMobile && (
-          <ul style={S.navLinks}>
-            <li style={S.navItem}>
-              <button
-                style={S.navLink}
-                onClick={() => scrollTo("hero")}
-              >
-                Home
-              </button>
-            </li>
-            <NavDropdown
-              label="About"
-              onNav={scrollTo}
-              items={[
-                { icon: "👤", text: "Profile", id: "about" },
-                { icon: "🎓", text: "Education", id: "education" },
-              ]}
-            />
-            <NavDropdown
-              label="Work"
-              onNav={scrollTo}
-              items={[
-                { icon: "💼", text: "Experience", id: "experience" },
-                { icon: "🚀", text: "Projects", id: "projects" },
-              ]}
-            />
-            <NavDropdown
-              label="Skills"
-              onNav={scrollTo}
-              items={[
-                { icon: "⚡", text: "Tech Stack", id: "skills" },
-                { icon: "🛠️", text: "Tools & Infra", id: "skills" },
-              ]}
-            />
-            <li style={S.navItem}>
-              <button
-                style={S.navLink}
-                onClick={() => scrollTo("contact")}
-              >
-                Contact
-              </button>
-            </li>
-          </ul>
-        )}
-
-        {!isMobile ? (
-          <button style={S.navCta} onClick={() => scrollTo("contact")}>
-            Hire Me
-          </button>
-        ) : (
-          <button
-            style={S.hamburger}
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            <span style={S.hamburgerLine} />
-            <span style={S.hamburgerLine} />
-            <span style={S.hamburgerLine} />
-          </button>
-        )}
-
-        {/* Mobile nav overlay */}
-        {mobileMenuOpen && isMobile && (
-          <div className="nv-overlay">
-            <button type="button" onClick={() => scrollTo("hero")}>🏠 Home</button>
-            <button type="button" onClick={() => scrollTo("about")}>👤 Profile</button>
-            <button type="button" onClick={() => scrollTo("education")}>🎓 Education</button>
-            <button type="button" onClick={() => scrollTo("experience")}>💼 Experience</button>
-            <button type="button" onClick={() => scrollTo("projects")}>🚀 Projects</button>
-            <button type="button" onClick={() => scrollTo("skills")}>⚡ Skills</button>
-            <button type="button" onClick={() => scrollTo("contact")}>📧 Contact</button>
+        <ul style={S.navLinks}>
+          <li style={S.navItem}>
             <button
-              type="button"
-              className="nv-overlay-cta"
+              style={S.navLink}
+              onClick={() => scrollTo("hero")}
+            >
+              Home
+            </button>
+          </li>
+          <NavDropdown
+            label="About"
+            onNav={scrollTo}
+            items={[
+              { icon: "👤", text: "Profile", id: "about" },
+              { icon: "🎓", text: "Education", id: "education" },
+            ]}
+          />
+          <NavDropdown
+            label="Work"
+            onNav={scrollTo}
+            items={[
+              { icon: "💼", text: "Experience", id: "experience" },
+              { icon: "🚀", text: "Projects", id: "projects" },
+            ]}
+          />
+          <NavDropdown
+            label="Skills"
+            onNav={scrollTo}
+            items={[
+              { icon: "⚡", text: "Tech Stack", id: "skills" },
+              { icon: "🛠️", text: "Tools & Infra", id: "skills" },
+            ]}
+          />
+          <li style={S.navItem}>
+            <button
+              style={S.navLink}
               onClick={() => scrollTo("contact")}
             >
-              Hire Me
+              Contact
             </button>
-          </div>
-        )}
+          </li>
+        </ul>
+        <button style={S.navCta} onClick={() => scrollTo("contact")}>
+          Hire Me
+        </button>
       </nav>
 
       {/* ── HERO ── */}
       <section id="hero" style={S.hero}>
         <div style={S.heroBg} />
         <div style={S.gridLines} />
-        <div
-          style={{
-            ...S.heroInner,
-            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-            gap: isMobile ? 40 : 80,
-            textAlign: isMobile ? "center" : undefined,
-          }}
-        >
+        <div style={S.heroInner}>
           <div>
-            <div
-              style={{
-                ...S.badge,
-                marginLeft: isMobile ? "auto" : undefined,
-                marginRight: isMobile ? "auto" : undefined,
-              }}
-            >
+            <div style={S.badge}>
               <span
                 style={{
                   ...S.dot,
@@ -1128,26 +991,13 @@ export default function NagendraPortfolio() {
                 Verma
               </span>
             </h1>
-            <p
-              style={{
-                ...S.heroSub,
-                maxWidth: isMobile ? "100%" : 460,
-                marginLeft: isMobile ? "auto" : undefined,
-                marginRight: isMobile ? "auto" : undefined,
-                fontSize: isMobile ? "0.92rem" : "1rem",
-              }}
-            >
+            <p style={S.heroSub}>
               Full Stack Java Developer crafting scalable,
               cloud-native systems. Specialized in Spring Boot,
               microservices, and enterprise-grade platforms that
               handle real-world complexity at scale.
             </p>
-            <div
-              style={{
-                ...S.heroActions,
-                justifyContent: isMobile ? "center" : undefined,
-              }}
-            >
+            <div style={S.heroActions}>
               <button
                 style={S.btnPrimary}
                 onClick={() => scrollTo("projects")}
@@ -1161,13 +1011,7 @@ export default function NagendraPortfolio() {
                 Get in Touch
               </button>
             </div>
-            <div
-              style={{
-                ...S.heroStats,
-                justifyContent: isMobile ? "center" : undefined,
-                gap: isMobile ? 24 : 32,
-              }}
-            >
+            <div style={S.heroStats}>
               {[
                 ["3+", "Major Projects"],
                 ["8.3", "CGPA (MCA)"],
@@ -1180,75 +1024,17 @@ export default function NagendraPortfolio() {
               ))}
             </div>
           </div>
-
-          {/* Photo — hide on mobile (already visible below in the stack) */}
-          {!isMobile && (
-            <div style={S.photoOuter}>
-              <div style={S.photoFrame}>
-                <div
-                  style={{
-                    ...S.photoRing,
-                    animation: "spin 8s linear infinite",
-                  }}
-                />
-                <div
-                  style={{
-                    ...S.photoRing2,
-                    animation:
-                      "spin 20s linear infinite reverse",
-                  }}
-                />
-                <img
-                  src="https://res.cloudinary.com/dle4xx8gm/image/upload/v1781023556/Screenshot_2026-06-09_221259_mfy22u.png"
-                  alt="Nagendra Verma"
-                  style={S.photoImg}
-                />
-                <div
-                  style={{
-                    ...S.floatingTag,
-                    bottom: -10,
-                    right: -40,
-                    animation: "float1 4s ease-in-out infinite",
-                  }}
-                >
-                  ⚡ Spring Boot
-                </div>
-                <div
-                  style={{
-                    ...S.floatingTag,
-                    top: 10,
-                    left: -55,
-                    animation: "float2 5s ease-in-out infinite",
-                  }}
-                >
-                  ☁️ AWS + Docker
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Photo on mobile — below the hero text, smaller */}
-        {isMobile && (
-          <div
-            style={{
-              ...S.photoOuter,
-              marginTop: 40,
-              marginBottom: 40,
-            }}
-          >
-            <div style={{ ...S.photoFrame, width: 180, height: 180 }}>
+          <div style={S.photoOuter}>
+            <div style={S.photoFrame}>
               <div
                 style={{
                   ...S.photoRing,
-                  inset: -10,
                   animation: "spin 8s linear infinite",
                 }}
               />
               <div
                 style={{
                   ...S.photoRing2,
-                  inset: -18,
                   animation:
                     "spin 20s linear infinite reverse",
                 }}
@@ -1261,8 +1047,8 @@ export default function NagendraPortfolio() {
               <div
                 style={{
                   ...S.floatingTag,
-                  bottom: 0,
-                  right: -30,
+                  bottom: -10,
+                  right: -40,
                   animation: "float1 4s ease-in-out infinite",
                 }}
               >
@@ -1271,8 +1057,8 @@ export default function NagendraPortfolio() {
               <div
                 style={{
                   ...S.floatingTag,
-                  top: 0,
-                  left: -40,
+                  top: 10,
+                  left: -55,
                   animation: "float2 5s ease-in-out infinite",
                 }}
               >
@@ -1280,7 +1066,7 @@ export default function NagendraPortfolio() {
               </div>
             </div>
           </div>
-        )}
+        </div>
       </section>
 
       {/* ── ABOUT ── */}
@@ -1291,8 +1077,8 @@ export default function NagendraPortfolio() {
             style={{
               ...r1.style,
               display: "grid",
-              gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-              gap: isMobile ? 32 : 80,
+              gridTemplateColumns: "1fr 1fr",
+              gap: 80,
               alignItems: "center",
             }}
           >
@@ -1436,7 +1222,7 @@ export default function NagendraPortfolio() {
       </section>
 
       {/* ── SKILLS ── */}
-      <section id="skills" style={{ ...S.section, padding: isMobile ? "60px 5%" : "96px 5%" }}>
+      <section id="skills" style={S.section}>
         <div style={S.sectionInner}>
           <div ref={r2.ref} style={r2.style}>
             <div style={S.eyebrow}>
@@ -1546,7 +1332,7 @@ export default function NagendraPortfolio() {
       </section>
 
       {/* ── PROJECTS ── */}
-      <section id="projects" style={{ ...S.sectionAlt, padding: isMobile ? "60px 5%" : "96px 5%" }}>
+      <section id="projects" style={S.sectionAlt}>
         <div style={S.sectionInner}>
           <div ref={r4.ref} style={r4.style}>
             <div style={S.eyebrow}>
@@ -1624,7 +1410,7 @@ export default function NagendraPortfolio() {
       </section>
 
       {/* ── EXPERIENCE ── */}
-      <section id="experience" style={{ ...S.section, padding: isMobile ? "60px 5%" : "96px 5%" }}>
+      <section id="experience" style={S.section}>
         <div style={S.sectionInner}>
           <div ref={r6.ref} style={r6.style}>
             <div style={S.eyebrow}>
@@ -1646,13 +1432,13 @@ export default function NagendraPortfolio() {
               ...r7.style,
               marginTop: 52,
               position: "relative",
-              paddingLeft: isMobile ? 52 : 80,
+              paddingLeft: 80,
             }}
           >
             <div
               style={{
                 position: "absolute",
-                left: isMobile ? 12 : 24,
+                left: 24,
                 top: 0,
                 bottom: 0,
                 width: 2,
@@ -1662,24 +1448,24 @@ export default function NagendraPortfolio() {
             <div
               style={{
                 position: "absolute",
-                left: isMobile ? -4 : 0,
+                left: 0,
                 top: 0,
-                width: 36,
-                height: 36,
+                width: 48,
+                height: 48,
                 borderRadius: "50%",
                 background: C.card,
                 border: `2px solid ${C.blue}`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "1rem",
+                fontSize: "1.2rem",
                 zIndex: 1,
               }}
             >
               💼
             </div>
             <div
-              style={{ ...S.card, borderRadius: 16, padding: isMobile ? 20 : 28 }}
+              style={{ ...S.card, borderRadius: 16, padding: 28 }}
             >
               <div
                 style={{
@@ -1757,7 +1543,7 @@ export default function NagendraPortfolio() {
       </section>
 
       {/* ── EDUCATION ── */}
-      <section id="education" style={{ ...S.sectionAlt, padding: isMobile ? "60px 5%" : "96px 5%" }}>
+      <section id="education" style={S.sectionAlt}>
         <div style={S.sectionInner}>
           <div ref={r8.ref} style={r8.style}>
             <div style={S.eyebrow}>
@@ -1776,14 +1562,12 @@ export default function NagendraPortfolio() {
               style={{
                 ...S.card,
                 borderRadius: 20,
-                padding: isMobile ? 24 : 36,
+                padding: 36,
                 maxWidth: 560,
                 marginTop: 48,
                 display: "flex",
-                gap: isMobile ? 16 : 24,
+                gap: 24,
                 alignItems: "flex-start",
-                flexDirection: isMobile ? "column" : "row",
-                textAlign: isMobile ? "center" as const : undefined,
               }}
             >
               <div
@@ -1798,8 +1582,6 @@ export default function NagendraPortfolio() {
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: "1.6rem",
-                  marginLeft: isMobile ? "auto" : undefined,
-                  marginRight: isMobile ? "auto" : undefined,
                 }}
               >
                 🎓
@@ -1857,7 +1639,7 @@ export default function NagendraPortfolio() {
       </section>
 
       {/* ── CONTACT ── */}
-      <section id="contact" style={{ ...S.section, padding: isMobile ? "60px 5%" : "96px 5%" }}>
+      <section id="contact" style={S.section}>
         <div style={S.sectionInner}>
           <div style={S.eyebrow}>
             <span
@@ -1882,15 +1664,15 @@ export default function NagendraPortfolio() {
               great together
             </span>
           </h2>
-          <p style={{ ...S.sectionDesc, marginBottom: 52, marginLeft: isMobile ? "auto" : undefined, marginRight: isMobile ? "auto" : undefined, textAlign: isMobile ? "center" as const : undefined }}>
+          <p style={{ ...S.sectionDesc, marginBottom: 52 }}>
             Open to full-time roles, freelance projects, and
             interesting engineering challenges.
           </p>
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-              gap: isMobile ? 32 : 52,
+              gridTemplateColumns: "1fr 1fr",
+              gap: 52,
               alignItems: "start",
             }}
           >
@@ -1940,7 +1722,7 @@ export default function NagendraPortfolio() {
         style={{
           background: C.slate,
           borderTop: `1px solid ${C.border}`,
-          padding: isMobile ? "28px 5%" : "36px 5%",
+          padding: "36px 5%",
           textAlign: "center",
         }}
       >
