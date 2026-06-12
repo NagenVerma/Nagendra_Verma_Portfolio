@@ -1,19 +1,9 @@
 // Nagendra Verma — Portfolio
-// EmailJS integrated → messages go to nagendrayounger@gmail.com
-//
-// SETUP (one-time):
-//   1. Go to https://www.emailjs.com → create free account
-//   2. Add Email Service → connect your Gmail → copy SERVICE_ID
-//   3. Create Email Template with variables: {{from_name}}, {{from_email}}, {{message}}
-//      Copy TEMPLATE_ID
-//   4. Go to Account → copy PUBLIC_KEY
-//   5. Replace the three placeholders below with your real values
-
-const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID" // e.g. "service_abc123"
-const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID" // e.g. "template_xyz456"
-const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY" // e.g. "AbCdEfGhIjKlMnOp"
+// EmailJS — messages go to nagendrayounger@gmail.com
+// Uses your Gmail app password via EmailJS service (no backend needed)
 
 import { useState, useEffect, useRef } from "react"
+import emailjs from "@emailjs/browser"
 
 // ── Inline styles (no external CSS files) ──────────────────────────────
 
@@ -731,7 +721,10 @@ function ContactLink({
   )
 }
 
-// ── EmailJS sender ─────────────────────────────────────────────────────────
+// ── EmailJS — initialized once, then sends via the SDK ──────────────────
+// Public key is set in your EmailJS dashboard: ARW68QPGWvlp0XDwP
+
+emailjs.init("ARW68QPGWvlp0XDwP")
 
 async function sendEmail(
   name: string,
@@ -739,23 +732,15 @@ async function sendEmail(
   message: string
 ): Promise<boolean> {
   try {
-    const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        service_id: EMAILJS_SERVICE_ID,
-        template_id: EMAILJS_TEMPLATE_ID,
-        user_id: EMAILJS_PUBLIC_KEY,
-        template_params: {
-          from_name: name,
-          from_email: email,
-          message: message,
-          to_email: "nagendrayounger@gmail.com",
-        },
-      }),
+    const res = await emailjs.send("service_x9jvj28", "template_sf86ezf", {
+      from_name: name,
+      from_email: email,
+      message: message,
+      to_email: "nagendrayounger@gmail.com",
     })
-    return res.ok
-  } catch {
+    return res.status === 200
+  } catch (err) {
+    console.error("EmailJS error:", err)
     return false
   }
 }
@@ -1701,7 +1686,7 @@ export default function NagendraPortfolio() {
                 icon="💼"
                 label="LinkedIn"
                 value="linkedin.com/in/nagendra-verma"
-                href="https://linkedin.com/in/nagendra-verma"
+                href="https://linkedin.com/in/nagendra-verma-8a60372b2/"
                 iconBg="rgba(139,92,246,0.15)"
               />
               <ContactLink
